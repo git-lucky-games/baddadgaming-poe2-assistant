@@ -82,6 +82,53 @@ export function resolveStatId(modText: string, group: StatGroupId): string | und
   return statsByGroup.get(group)?.get(template)
 }
 
+export interface TradeListing {
+  method: string
+  indexed: string
+  price: { type: string; amount: number; currency: string } | null
+  account: {
+    name: string
+    lastCharacterName?: string
+    online?: { status?: string } | null
+  }
+  whisper: string | null
+}
+
+export interface TradeItemDetails {
+  name?: string
+  typeLine: string
+  baseType?: string
+  ilvl?: number
+  identified: boolean
+  corrupted?: boolean
+  mirrored?: boolean
+  explicitMods?: string[]
+  implicitMods?: string[]
+  craftedMods?: string[]
+  fracturedMods?: string[]
+  enchantMods?: string[]
+  frameType?: number
+}
+
+/** One priced listing from a fetch call. */
+export interface TradeItem {
+  id: string
+  listing: TradeListing
+  item: TradeItemDetails
+}
+
+export interface TradeSearchResponse {
+  id: string
+  complexity?: number
+  result: string[]
+  total: number
+}
+
+// GGG returns `null` for ids that sold between search and fetch — callers must filter these.
+export interface TradeFetchResponse {
+  result: (TradeItem | null)[]
+}
+
 export function buildSearchBody(filters: StatFilter[], options: TradeSearchOptions = {}): TradeSearchBody {
   return {
     query: {
