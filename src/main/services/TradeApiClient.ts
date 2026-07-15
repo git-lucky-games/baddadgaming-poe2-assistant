@@ -7,9 +7,9 @@ import type {
   TradeSearchResponse,
   TradeFetchResponse
 } from '../features/gear-upgrade/TradeQueryBuilder'
+import { USER_AGENT } from './userAgent'
 
 const BASE_URL = 'https://www.pathofexile.com'
-const USER_AGENT = 'BadCuzDad/0.1 (POE2 gear assistant; contact: akarvell@gmail.com)'
 // GGG's fetch endpoint accepts at most 10 ids per call.
 const FETCH_BATCH_SIZE = 10
 
