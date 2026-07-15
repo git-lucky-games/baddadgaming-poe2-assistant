@@ -1,10 +1,13 @@
+import SettingsPage from './pages/SettingsPage'
+
 function App(): React.JSX.Element {
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4 bg-charcoal text-gold">
-      <h1 className="text-4xl font-bold tracking-wide">
-        Bad Cuz Dad
-      </h1>
-      <p className="text-crimson">POE2 Gaming Assistant — Hello Bad Dad</p>
+    <div className="h-screen overflow-y-auto bg-charcoal text-gold">
+      <header className="border-b border-gold/20 px-8 py-4">
+        <h1 className="text-xl font-bold tracking-wide">Bad Cuz Dad</h1>
+        <p className="text-xs text-gold/50">POE2 Gaming Assistant</p>
+      </header>
+      <SettingsPage />
     </div>
   )
 }

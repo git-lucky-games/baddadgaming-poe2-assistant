@@ -1,7 +1,13 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import type { AppConfig } from '@shared/types'
 
-const api = {}
+const api = {
+  config: {
+    get: (): Promise<AppConfig> => ipcRenderer.invoke('config:get'),
+    set: (partial: Partial<AppConfig>): Promise<AppConfig> => ipcRenderer.invoke('config:set', partial)
+  }
+}
 
 if (process.contextIsolated) {
   try {
