@@ -4,8 +4,7 @@ import type { AppConfig } from '@shared/types'
 const defaults: AppConfig = {
   poesessid: '',
   accountName: '',
-  league: 'Standard',
-  anthropicApiKey: ''
+  league: 'Standard'
 }
 
 // electron-store's encryptionKey only obfuscates the config file against casual

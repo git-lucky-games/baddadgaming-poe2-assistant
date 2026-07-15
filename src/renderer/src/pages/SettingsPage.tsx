@@ -7,8 +7,7 @@ const LEAGUE_SUGGESTIONS = ['Standard', 'Hardcore', 'Standard SSF', 'Hardcore SS
 const emptyForm: AppConfig = {
   poesessid: '',
   accountName: '',
-  league: 'Standard',
-  anthropicApiKey: ''
+  league: 'Standard'
 }
 
 function SettingsPage(): React.JSX.Element {
@@ -83,18 +82,6 @@ function SettingsPage(): React.JSX.Element {
               <option key={league} value={league} />
             ))}
           </datalist>
-        </label>
-
-        <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-gold">Anthropic API Key</span>
-          <input
-            type="password"
-            autoComplete="off"
-            className="rounded border border-gold/30 bg-black/30 px-3 py-2 text-gold placeholder:text-gold/30 focus:border-gold focus:outline-none"
-            placeholder="sk-ant-..."
-            value={form.anthropicApiKey}
-            onChange={(e) => handleChange('anthropicApiKey', e.target.value)}
-          />
         </label>
 
         <div className="flex items-center gap-3">
