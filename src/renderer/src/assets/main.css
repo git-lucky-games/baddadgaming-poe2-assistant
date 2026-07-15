@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-charcoal: #1a1a2e;
+  --color-gold: #c9a84c;
+  --color-crimson: #8b1a1a;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  color: var(--color-gold);
+  background-color: var(--color-charcoal);
+}

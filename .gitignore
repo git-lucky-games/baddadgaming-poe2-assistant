@@ -1,0 +1,11 @@
+node_modules
+dist
+out
+build/*.icns
+build/*.ico
+build/*.png
+*.log
+.DS_Store
+.env
+*.sqlite
+*.sqlite3
