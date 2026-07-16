@@ -14,7 +14,15 @@ const ACCOUNT_NAME = process.env.ACCOUNT_NAME
 const LEAGUE = process.env.LEAGUE ?? 'Standard'
 
 if (!POESESSID || !ACCOUNT_NAME) {
-  console.error('Set POESESSID and ACCOUNT_NAME env vars first — see the header comment in this file.')
+  const missing = []
+  if (!POESESSID) missing.push('POESESSID')
+  if (!ACCOUNT_NAME) missing.push('ACCOUNT_NAME')
+  console.error(`Missing env var(s): ${missing.join(', ')}. See the header comment in this file.`)
+  console.error('Here is what this script actually sees right now (lengths only, never the values):')
+  for (const key of ['POESESSID', 'ACCOUNT_NAME', 'LEAGUE']) {
+    const value = process.env[key]
+    console.error(`  ${key}: ${value ? `set, length ${value.length}` : 'NOT SET'}`)
+  }
   process.exit(1)
 }
 
