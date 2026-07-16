@@ -12,7 +12,11 @@ This assistant helps POE2 players with builds, items, crafting, and game mechani
 2. **Instant Clipboard Price Lookup** — hover an item and press Ctrl+C (POE's native item-export hotkey); the item text is parsed and looked up on the trade API.
 3. **High-Value Item Auto-Detection** — passive clipboard monitor alerts you when a copied item's value exceeds a divine orb threshold.
 
-## Development
+## Running it
+
+**Windows:** clone or download this repo, then double-click `run-windows.bat` — it checks for Node.js, installs dependencies, and launches the app. (Needs [Node.js](https://nodejs.org) installed first if you don't already have it.)
+
+**Development (any platform):**
 
 ```bash
 npm install
