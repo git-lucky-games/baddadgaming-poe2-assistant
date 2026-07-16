@@ -49,23 +49,24 @@ async function call(label, url) {
 }
 
 async function main() {
-  const characters = await call(
-    'getCharacters (realm=poe2)',
-    `https://www.pathofexile.com/character-window/get-characters?accountName=${encodeURIComponent(ACCOUNT_NAME)}&realm=poe2`
-  )
+  // Diagnostic mode (2026-07-16): get-characters&realm=poe2 was only ever
+  // returning ONE character (an old SSF alt) despite the account having
+  // several higher-level characters confirmed real via poe.ninja/the
+  // official site. Trying every plausible `realm` value in one pass to see
+  // which one(s), if any, actually return the missing characters.
+  const realmsToTry = ['poe2', 'pc', 'pc2', '']
 
-  const firstCharacterName = characters?.[0]?.name
-  if (firstCharacterName) {
-    await call(
-      `getCharacterItems (${firstCharacterName})`,
-      `https://www.pathofexile.com/character-window/get-items?accountName=${encodeURIComponent(ACCOUNT_NAME)}&character=${encodeURIComponent(firstCharacterName)}&realm=poe2`
-    )
-  } else {
-    console.log('\nNo characters returned — skipping getCharacterItems. This alone tells us realm=poe2 is probably wrong.')
+  for (const realm of realmsToTry) {
+    const url =
+      `https://www.pathofexile.com/character-window/get-characters?accountName=${encodeURIComponent(ACCOUNT_NAME)}` +
+      (realm ? `&realm=${realm}` : '')
+    const characters = await call(`getCharacters (realm=${realm || '(omitted)'})`, url)
+    const names = Array.isArray(characters) ? characters.map((c) => c.name) : null
+    console.log('character names:', names ?? '(not an array / error)')
   }
 
   console.log(
-    '\nDone. Compare these shapes against GggCharacter/GggItem in src/shared/types.ts, then tell Claude what differs (field names, missing data, etc.) — no need to share raw output if it contains anything you consider private, a description of the differences is enough.'
+    '\nDone. Look at which realm value(s) above actually listed CholaMasFina / Hopesolow / getrattedbud, then tell Claude which one(s) worked — no need to share full raw output, just which realm values found which characters is enough.'
   )
 }
 
