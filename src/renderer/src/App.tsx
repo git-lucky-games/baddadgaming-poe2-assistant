@@ -8,6 +8,9 @@ function App(): React.JSX.Element {
         <p className="text-xs text-gold/50">POE2 Gaming Assistant</p>
       </header>
       <SettingsPage />
+      <footer className="border-t border-gold/20 px-8 py-3 text-center text-xs text-gold/40">
+        This product isn't affiliated with or endorsed by Grinding Gear Games in any way.
+      </footer>
     </div>
   )
 }
