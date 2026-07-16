@@ -1,11 +1,17 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import type { AppConfig } from '@shared/types'
+import type { AppConfig, GggCharacter, SlotUpgrades } from '@shared/types'
 
 const api = {
   config: {
     get: (): Promise<AppConfig> => ipcRenderer.invoke('config:get'),
     set: (partial: Partial<AppConfig>): Promise<AppConfig> => ipcRenderer.invoke('config:set', partial)
+  },
+  ggg: {
+    getCharacters: (): Promise<GggCharacter[]> => ipcRenderer.invoke('ggg:getCharacters')
+  },
+  gearUpgrade: {
+    scan: (character: string): Promise<SlotUpgrades[]> => ipcRenderer.invoke('gear-upgrade:scan', character)
   }
 }
 

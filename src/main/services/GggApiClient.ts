@@ -1,5 +1,6 @@
 import type { HttpRequestOptions, HttpResponse } from './HttpClient'
 import type { RateLimiter } from './RateLimiter'
+import type { GggCharacter, GggItem } from '@shared/types'
 import { USER_AGENT } from './userAgent'
 
 const BASE_URL = 'https://www.pathofexile.com'
@@ -13,31 +14,6 @@ export class GggApiError extends Error {
     super(`GGG API ${endpoint} failed with status ${status}`)
     this.name = 'GggApiError'
   }
-}
-
-export interface GggCharacter {
-  name: string
-  league: string
-  level: number
-  class: string
-}
-
-export interface GggItem {
-  id: string
-  name: string
-  typeLine: string
-  baseType?: string
-  ilvl?: number
-  /** Equipment slot, e.g. "Helm", "BodyArmour", "Weapon", "Ring2". Also covers non-gear slots (flasks, etc) — filter by slot before treating as gear. */
-  inventoryId: string
-  identified: boolean
-  corrupted?: boolean
-  explicitMods?: string[]
-  implicitMods?: string[]
-  craftedMods?: string[]
-  fracturedMods?: string[]
-  enchantMods?: string[]
-  frameType?: number
 }
 
 export interface GggStashTab {

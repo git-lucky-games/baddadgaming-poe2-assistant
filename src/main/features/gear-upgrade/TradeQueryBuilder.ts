@@ -1,4 +1,7 @@
 import statIdsData from '@data/stat-ids.json'
+import type { TradeItem } from '@shared/types'
+
+export type { TradeItem } from '@shared/types'
 
 export type StatGroupId =
   | 'pseudo'
@@ -80,41 +83,6 @@ const statsByGroup: Map<StatGroupId, Map<string, string>> = new Map(
 export function resolveStatId(modText: string, group: StatGroupId): string | undefined {
   const { template } = parseModText(modText)
   return statsByGroup.get(group)?.get(template)
-}
-
-export interface TradeListing {
-  method: string
-  indexed: string
-  price: { type: string; amount: number; currency: string } | null
-  account: {
-    name: string
-    lastCharacterName?: string
-    online?: { status?: string } | null
-  }
-  whisper: string | null
-}
-
-export interface TradeItemDetails {
-  name?: string
-  typeLine: string
-  baseType?: string
-  ilvl?: number
-  identified: boolean
-  corrupted?: boolean
-  mirrored?: boolean
-  explicitMods?: string[]
-  implicitMods?: string[]
-  craftedMods?: string[]
-  fracturedMods?: string[]
-  enchantMods?: string[]
-  frameType?: number
-}
-
-/** One priced listing from a fetch call. */
-export interface TradeItem {
-  id: string
-  listing: TradeListing
-  item: TradeItemDetails
 }
 
 export interface TradeSearchResponse {

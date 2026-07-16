@@ -10,6 +10,7 @@ files:
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
 asarUnpack:
   - resources/**
+  - node_modules/better-sqlite3/**
 win:
   executableName: bad-cuz-dad
 nsis:
@@ -33,4 +34,8 @@ linux:
   category: Game
 appImage:
   artifactName: ${name}-${version}.${ext}
+# postinstall already rebuilds better-sqlite3 for the host's Electron ABI (see
+# package.json), which covers dev + same-host packaging. Cross-platform release
+# builds (e.g. packaging Windows from Linux/Mac) will need real attention here —
+# revisit when actually cutting cross-platform releases, not before.
 npmRebuild: false

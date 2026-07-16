@@ -1,4 +1,7 @@
-import { parseModText, type StatGroupId, type TradeItem } from './TradeQueryBuilder'
+import { parseModText, type StatGroupId } from './TradeQueryBuilder'
+import type { TradeItem, PriceTier, StatDelta, RankedUpgrade } from '@shared/types'
+
+export type { PriceTier, StatDelta, RankedUpgrade }
 
 export interface CurrentItemStat {
   group: StatGroupId
@@ -12,17 +15,6 @@ export interface CurrentItemStat {
   value: number
 }
 
-export type PriceTier = 'great-deal' | 'cheap-enough' | 'market-value' | 'higher-than-normal'
-
-export interface RankedUpgrade {
-  item: TradeItem
-  priceInDivine: number
-  priceTier: PriceTier
-  isBestValue: boolean
-  /** null = wallet total unavailable (stash fetch failed), not "can't afford". */
-  affordable: boolean | null
-}
-
 export function priceToDivine(
   price: { amount: number; currency: string } | null,
   divineRates: Record<string, number>
@@ -34,8 +26,8 @@ export function priceToDivine(
   return price.amount / rate
 }
 
-/** Sum of (candidate stat value - current stat value) across the current item's own stats. */
-export function computeLiftScore(item: TradeItem, currentStats: CurrentItemStat[]): number {
+/** Per-stat comparison against the current item — feeds both the lift score and StatDeltaBadge in the UI. */
+export function computeStatDeltas(item: TradeItem, currentStats: CurrentItemStat[]): StatDelta[] {
   const allMods = [
     ...(item.item.explicitMods ?? []),
     ...(item.item.implicitMods ?? []),
@@ -44,15 +36,19 @@ export function computeLiftScore(item: TradeItem, currentStats: CurrentItemStat[
     ...(item.item.enchantMods ?? [])
   ]
 
-  let lift = 0
+  const deltas: StatDelta[] = []
   for (const stat of currentStats) {
     const { template } = parseModText(stat.modText)
     const match = allMods.find((mod) => parseModText(mod).template === template)
     if (!match) continue
     const candidateValue = parseModText(match).values[0] ?? 0
-    lift += candidateValue - stat.value
+    deltas.push({ modText: stat.modText, currentValue: stat.value, candidateValue, delta: candidateValue - stat.value })
   }
-  return lift
+  return deltas
+}
+
+export function computeLiftScore(item: TradeItem, currentStats: CurrentItemStat[]): number {
+  return computeStatDeltas(item, currentStats).reduce((sum, d) => sum + d.delta, 0)
 }
 
 function quartileTier(sortedIndex: number, total: number): PriceTier {
@@ -95,6 +91,7 @@ export function rankUpgrades(
     priceInDivine,
     priceTier: tierByItemId.get(item.id) ?? 'market-value',
     isBestValue: bestValueIds.has(item.id),
-    affordable: walletDivine === null ? null : priceInDivine <= walletDivine
+    affordable: walletDivine === null ? null : priceInDivine <= walletDivine,
+    statDeltas: computeStatDeltas(item, currentStats)
   }))
 }

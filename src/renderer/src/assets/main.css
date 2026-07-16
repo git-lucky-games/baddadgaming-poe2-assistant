@@ -4,6 +4,20 @@
   --color-charcoal: #1a1a2e;
   --color-gold: #c9a84c;
   --color-crimson: #8b1a1a;
+
+  /* Price-tier ramp: green (cheap) -> gold (neutral, matches brand) -> rust (pricier).
+     Deliberately distinct from POE's own item-rarity colors (white/blue/yellow/orange)
+     so a tier badge never reads as an item-rarity indicator by mistake. */
+  --color-tier-great: #3ea877;
+  --color-tier-cheap: #7fae5c;
+  --color-tier-market: #c9a84c;
+  --color-tier-high: #b3432f;
+
+  /* Best-value accent — a cool color against an otherwise warm palette, so it
+     reads as a distinct, orthogonal signal rather than another price tier. */
+  --color-value-accent: #5ec8d8;
+
+  --font-display: ui-sans-serif, 'Segoe UI', system-ui, sans-serif;
 }
 
 body {
@@ -11,4 +25,66 @@ body {
   overflow: hidden;
   color: var(--color-gold);
   background-color: var(--color-charcoal);
+  font-family: var(--font-display);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Paperdoll: a stylized slot arrangement evoking a worn silhouette without
+   using any GGG game art — rings flank the belt, gloves/boots anchor the base. */
+.paperdoll {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas:
+    '.      helm   .'
+    'amulet .      .'
+    'weapon chest  offhand'
+    'ring1  belt   ring2'
+    'gloves boots  boots';
+  gap: 0.75rem;
+}
+
+.paperdoll::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: 0 auto;
+  width: 40%;
+  max-width: 220px;
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--color-gold) 8%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.slot-helm {
+  grid-area: helm;
+}
+.slot-amulet {
+  grid-area: amulet;
+}
+.slot-weapon {
+  grid-area: weapon;
+}
+.slot-chest {
+  grid-area: chest;
+}
+.slot-offhand {
+  grid-area: offhand;
+}
+.slot-ring1 {
+  grid-area: ring1;
+}
+.slot-belt {
+  grid-area: belt;
+}
+.slot-ring2 {
+  grid-area: ring2;
+}
+.slot-gloves {
+  grid-area: gloves;
+}
+.slot-boots {
+  grid-area: boots;
 }

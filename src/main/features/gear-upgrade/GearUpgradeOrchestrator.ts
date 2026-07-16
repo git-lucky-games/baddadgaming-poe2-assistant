@@ -1,8 +1,11 @@
-import type { GggApiClient, GggItem } from '../../services/GggApiClient'
+import type { GggApiClient } from '../../services/GggApiClient'
 import type { TradeApiClient } from '../../services/TradeApiClient'
 import type { PoeNinjaClient } from '../../services/PoeNinjaClient'
+import type { GggItem, SlotUpgrades } from '@shared/types'
 import { resolveStatId, buildSearchBody, parseModText, type StatGroupId, type StatFilter } from './TradeQueryBuilder'
-import { rankUpgrades, type CurrentItemStat, type RankedUpgrade } from './UpgradeRanker'
+import { rankUpgrades, type CurrentItemStat } from './UpgradeRanker'
+
+export type { SlotUpgrades }
 
 const MOD_FIELDS: Array<{ field: keyof GggItem; group: StatGroupId }> = [
   { field: 'explicitMods', group: 'explicit' },
@@ -27,12 +30,6 @@ const GEAR_SLOTS = new Set([
   'Ring2',
   'Belt'
 ])
-
-export interface SlotUpgrades {
-  slot: string
-  currentItem: GggItem
-  upgrades: RankedUpgrade[]
-}
 
 export class GearUpgradeOrchestrator {
   constructor(
@@ -61,7 +58,10 @@ export class GearUpgradeOrchestrator {
         continue
       }
 
-      const searchBody = buildSearchBody(filters, { status: 'online' })
+      // Explicit price-ascending sort matters here: searchAndFetch only keeps the
+      // first `maxResults` ids, so without this we could fetch an arbitrary
+      // slice of matches instead of the actually-cheapest ones.
+      const searchBody = buildSearchBody(filters, { status: 'online', sort: { price: 'asc' } })
       const candidates = await this.tradeApiClient.searchAndFetch(league, searchBody)
       const ranked = rankUpgrades(candidates, currentStats, divineRate.rates, walletDivine)
       results.push({ slot: item.inventoryId, currentItem: item, upgrades: ranked })
