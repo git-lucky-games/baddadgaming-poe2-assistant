@@ -8,17 +8,22 @@ const emptyForm: AppConfig = {
   poesessid: '',
   accountName: '',
   league: 'Standard',
-  currencyHoldings: { divine: 0, exalted: 0, chaos: 0 }
+  currencyHoldings: { divine: 0, exalted: 0, chaos: 0 },
+  priorityStats: []
 }
 
 function SettingsPage(): React.JSX.Element {
   // App.tsx loads config app-wide on mount — no need to re-fetch here too.
   const { config, loading, saving, saveConfig } = useAppStore()
   const [form, setForm] = useState<AppConfig>(emptyForm)
+  const [priorityStatsText, setPriorityStatsText] = useState('')
   const [savedAt, setSavedAt] = useState<number | null>(null)
 
   useEffect(() => {
-    if (config) setForm(config)
+    if (config) {
+      setForm(config)
+      setPriorityStatsText(config.priorityStats.join(', '))
+    }
   }, [config])
 
   function handleChange(field: keyof Omit<AppConfig, 'currencyHoldings'>, value: string): void {
@@ -32,7 +37,13 @@ function SettingsPage(): React.JSX.Element {
 
   async function handleSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault()
-    await saveConfig(form)
+    const priorityStats = priorityStatsText
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+    const updatedForm = { ...form, priorityStats }
+    await saveConfig(updatedForm)
+    setForm(updatedForm)
     setSavedAt(Date.now())
   }
 
@@ -125,6 +136,24 @@ function SettingsPage(): React.JSX.Element {
               />
             </label>
           </div>
+        </div>
+
+        <div className="flex flex-col gap-2 rounded border border-gold/15 bg-black/20 p-3">
+          <span className="text-sm font-medium text-gold">Stats that matter for this build</span>
+          <p className="text-xs text-gold/50">
+            Optional — the tool normally only searches for upgrades that match or beat <em>every</em> stat your current
+            item has, even ones your build doesn't use (e.g. leftover leveling-gear stats). List keywords here (comma
+            separated, e.g. "Life, Fire Resistance, Spell Damage") and it'll only require and compare those instead.
+            Leave blank to keep the default behavior. Applies account-wide, not per-character — update it if you switch
+            to a very different build.
+          </p>
+          <input
+            type="text"
+            className="rounded border border-gold/30 bg-black/30 px-3 py-2 text-gold placeholder:text-gold/30 focus:border-gold focus:outline-none"
+            placeholder="Life, Fire Resistance, Spell Damage"
+            value={priorityStatsText}
+            onChange={(e) => setPriorityStatsText(e.target.value)}
+          />
         </div>
 
         <div className="flex items-center gap-3">

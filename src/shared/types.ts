@@ -15,6 +15,17 @@ export interface AppConfig {
    * that signal shows "unknown" instead of a real afford/can't-afford call.
    */
   currencyHoldings: CurrencyHoldings
+  /**
+   * Free-text keywords (e.g. "Life", "Fire Resistance") matched case-insensitively
+   * against current-item mod text. When non-empty, the gear-upgrade search and
+   * ranking only require/consider stats matching one of these — otherwise a
+   * "dead" stat on the current item (irrelevant to this build) blocks the search
+   * from finding upgrades that don't happen to also roll it. Empty = unchanged
+   * behavior: every current stat is required, same as before this existed.
+   * Account-wide, not per-character — update it when switching between very
+   * different builds.
+   */
+  priorityStats: string[]
 }
 
 // --- Trade API domain types (also used over IPC by the renderer) ---

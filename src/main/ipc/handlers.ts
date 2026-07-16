@@ -31,9 +31,9 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('gear-upgrade:scan', async (_event, character: string): Promise<SlotUpgrades[]> => {
     const { accountName } = requireAccountConfigured()
-    const { league, currencyHoldings } = configStore.store
+    const { league, currencyHoldings, priorityStats } = configStore.store
     try {
-      return await gearUpgradeOrchestrator.scanCharacter(accountName, character, league, currencyHoldings)
+      return await gearUpgradeOrchestrator.scanCharacter(accountName, character, league, currencyHoldings, priorityStats)
     } catch (err) {
       throw new Error(friendlyErrorMessage(err, 'pathofexile.com or the trade site'))
     }

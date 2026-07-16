@@ -42,7 +42,8 @@ export class GearUpgradeOrchestrator {
     accountName: string,
     character: string,
     league: string,
-    currencyHoldings: CurrencyHoldings
+    currencyHoldings: CurrencyHoldings,
+    priorityStats: string[] = []
   ): Promise<SlotUpgrades[]> {
     const items = await this.gggApiClient.getCharacterItems(accountName, character)
     const equipped = items.filter((item) => GEAR_SLOTS.has(item.inventoryId))
@@ -54,7 +55,7 @@ export class GearUpgradeOrchestrator {
 
     const results: SlotUpgrades[] = []
     for (const item of equipped) {
-      const currentStats = this.extractStats(item)
+      const currentStats = this.relevantStats(this.extractStats(item), priorityStats)
       const filters = this.buildFilters(currentStats)
 
       if (filters.length === 0) {
@@ -81,6 +82,24 @@ export class GearUpgradeOrchestrator {
       if (id) filters.push({ id, min: stat.value })
     }
     return filters
+  }
+
+  /**
+   * With no priority keywords, every current stat is required (original
+   * behavior). With priorities set, only stats matching one of them (case-
+   * insensitive substring against the mod text) are required/ranked — this is
+   * what stops a "dead" stat on the current item (e.g. leftover leveling-gear
+   * Intelligence on a build that doesn't use it) from blocking a search that
+   * would otherwise find a good upgrade.
+   */
+  private relevantStats(currentStats: CurrentItemStat[], priorityStats: string[]): CurrentItemStat[] {
+    if (priorityStats.length === 0) return currentStats
+    const keywords = priorityStats.map((k) => k.toLowerCase()).filter(Boolean)
+    if (keywords.length === 0) return currentStats
+    return currentStats.filter((stat) => {
+      const modTextLower = stat.modText.toLowerCase()
+      return keywords.some((keyword) => modTextLower.includes(keyword))
+    })
   }
 
   private extractStats(item: GggItem): CurrentItemStat[] {

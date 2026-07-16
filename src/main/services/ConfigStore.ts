@@ -5,7 +5,8 @@ const defaults: AppConfig = {
   poesessid: '',
   accountName: '',
   league: 'Standard',
-  currencyHoldings: { divine: 0, exalted: 0, chaos: 0 }
+  currencyHoldings: { divine: 0, exalted: 0, chaos: 0 },
+  priorityStats: []
 }
 
 // electron-store's encryptionKey only obfuscates the config file against casual
