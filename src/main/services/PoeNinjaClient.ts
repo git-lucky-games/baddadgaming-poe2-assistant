@@ -1,6 +1,9 @@
 import type { HttpRequestOptions, HttpResponse } from './HttpClient'
 import type { NinjaCacheStore } from '../cache/NinjaCache'
+import type { DivineRate } from '@shared/types'
 import { USER_AGENT } from './userAgent'
+
+export type { DivineRate } from '@shared/types'
 
 // poe.ninja's current (2026) API — verified live against poe.ninja/docs/api. Its
 // predecessor (/api/data/currencyoverview) is gone (404s), so don't reintroduce it.
@@ -48,12 +51,6 @@ export interface CurrencyExchangeOverview {
   }
   lines: CurrencyExchangeLine[]
   items: CurrencyMeta[]
-}
-
-export interface DivineRate {
-  /** currency id (e.g. "exalted", "chaos") -> how many equal 1 Divine Orb. */
-  rates: Record<string, number>
-  fetchedAt: number
 }
 
 export class PoeNinjaClient {

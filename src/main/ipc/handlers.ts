@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron'
-import type { AppConfig, GggCharacter, SlotUpgrades } from '@shared/types'
+import type { AppConfig, GggCharacter, SlotUpgrades, DivineRate } from '@shared/types'
 import { configStore } from '../services/ConfigStore'
-import { gggApiClient, gearUpgradeOrchestrator } from '../bootstrap'
+import { gggApiClient, gearUpgradeOrchestrator, poeNinjaClient } from '../bootstrap'
 
 export function registerIpcHandlers(): void {
   ipcMain.handle('config:get', (): AppConfig => configStore.store)
@@ -19,5 +19,10 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('gear-upgrade:scan', (_event, character: string): Promise<SlotUpgrades[]> => {
     const { accountName, league, currencyHoldings } = configStore.store
     return gearUpgradeOrchestrator.scanCharacter(accountName, character, league, currencyHoldings)
+  })
+
+  ipcMain.handle('ninja:getDivineRate', (): Promise<DivineRate> => {
+    const { league } = configStore.store
+    return poeNinjaClient.getDivineRate(league)
   })
 }

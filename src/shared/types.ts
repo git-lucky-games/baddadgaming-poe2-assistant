@@ -108,3 +108,9 @@ export interface SlotUpgrades {
   currentItem: GggItem
   upgrades: RankedUpgrade[]
 }
+
+export interface DivineRate {
+  /** currency id (e.g. "exalted", "chaos") -> how many equal 1 Divine Orb. */
+  rates: Record<string, number>
+  fetchedAt: number
+}

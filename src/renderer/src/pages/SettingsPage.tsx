@@ -12,13 +12,10 @@ const emptyForm: AppConfig = {
 }
 
 function SettingsPage(): React.JSX.Element {
-  const { config, loading, saving, loadConfig, saveConfig } = useAppStore()
+  // App.tsx loads config app-wide on mount — no need to re-fetch here too.
+  const { config, loading, saving, saveConfig } = useAppStore()
   const [form, setForm] = useState<AppConfig>(emptyForm)
   const [savedAt, setSavedAt] = useState<number | null>(null)
-
-  useEffect(() => {
-    loadConfig()
-  }, [loadConfig])
 
   useEffect(() => {
     if (config) setForm(config)

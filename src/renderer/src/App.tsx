@@ -1,11 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SettingsPage from './pages/SettingsPage'
 import GearUpgradePage from './pages/GearUpgradePage'
+import StatusBar from './components/StatusBar'
+import { useAppStore } from './store/appStore'
 
 type Page = 'gear-upgrade' | 'settings'
 
 function App(): React.JSX.Element {
   const [page, setPage] = useState<Page>('gear-upgrade')
+  const loadConfig = useAppStore((s) => s.loadConfig)
+
+  useEffect(() => {
+    loadConfig()
+  }, [loadConfig])
 
   return (
     <div className="h-screen overflow-y-auto bg-charcoal text-gold">
@@ -33,6 +40,8 @@ function App(): React.JSX.Element {
           </button>
         </nav>
       </header>
+
+      <StatusBar />
 
       {page === 'gear-upgrade' ? <GearUpgradePage /> : <SettingsPage />}
 

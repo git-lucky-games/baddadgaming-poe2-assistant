@@ -19,4 +19,4 @@ const poeNinjaClient = new PoeNinjaClient(request, new SqliteNinjaCache())
 const gggApiClient = new GggApiClient(rateLimiter, getPoesessid, request)
 
 export const gearUpgradeOrchestrator = new GearUpgradeOrchestrator(gggApiClient, tradeApiClient, poeNinjaClient)
-export { gggApiClient }
+export { gggApiClient, poeNinjaClient }

@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import type { AppConfig, GggCharacter, SlotUpgrades } from '@shared/types'
+import type { AppConfig, GggCharacter, SlotUpgrades, DivineRate } from '@shared/types'
 
 const api = {
   config: {
@@ -12,6 +12,9 @@ const api = {
   },
   gearUpgrade: {
     scan: (character: string): Promise<SlotUpgrades[]> => ipcRenderer.invoke('gear-upgrade:scan', character)
+  },
+  ninja: {
+    getDivineRate: (): Promise<DivineRate> => ipcRenderer.invoke('ninja:getDivineRate')
   }
 }
 

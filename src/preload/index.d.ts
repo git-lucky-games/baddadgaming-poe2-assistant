@@ -1,5 +1,5 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
-import type { AppConfig, GggCharacter, SlotUpgrades } from '@shared/types'
+import type { AppConfig, GggCharacter, SlotUpgrades, DivineRate } from '@shared/types'
 
 interface Api {
   config: {
@@ -11,6 +11,9 @@ interface Api {
   }
   gearUpgrade: {
     scan: (character: string) => Promise<SlotUpgrades[]>
+  }
+  ninja: {
+    getDivineRate: () => Promise<DivineRate>
   }
 }
 
