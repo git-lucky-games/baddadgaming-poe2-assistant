@@ -16,6 +16,7 @@
 
 const POESESSID = process.env.POESESSID
 const ACCOUNT_NAME = process.env.ACCOUNT_NAME
+const CHARACTER_NAME = process.env.CHARACTER_NAME
 
 if (!POESESSID || !ACCOUNT_NAME) {
   const missing = []
@@ -63,6 +64,20 @@ async function main() {
     const characters = await call(`getCharacters (realm=${realm || '(omitted)'})`, url)
     const names = Array.isArray(characters) ? characters.map((c) => c.name) : null
     console.log('character names:', names ?? '(not an array / error)')
+  }
+
+  // Narrower question (2026-07-16): even if get-characters can't LIST the
+  // real PoE2 roster, does get-items still work for a character name we
+  // already know from another source (site/poe.ninja)? If yes, a manual
+  // character-name text field could still work around the broken listing
+  // call. Set CHARACTER_NAME to test this.
+  if (CHARACTER_NAME) {
+    const url = `https://www.pathofexile.com/character-window/get-items?accountName=${encodeURIComponent(ACCOUNT_NAME)}&character=${encodeURIComponent(CHARACTER_NAME)}&realm=poe2`
+    const result = await call(`getCharacterItems (${CHARACTER_NAME}, realm=poe2)`, url)
+    const itemCount = Array.isArray(result?.items) ? result.items.length : null
+    console.log(`item count for ${CHARACTER_NAME}:`, itemCount ?? '(no items array / error — see status/body above)')
+  } else {
+    console.log('\n(Set CHARACTER_NAME env var to also test get-items directly against a known real character name.)')
   }
 
   console.log(
