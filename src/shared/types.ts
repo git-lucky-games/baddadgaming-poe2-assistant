@@ -1,7 +1,20 @@
+export interface CurrencyHoldings {
+  divine: number
+  exalted: number
+  chaos: number
+}
+
 export interface AppConfig {
   poesessid: string
   accountName: string
   league: string
+  /**
+   * Manually entered — POE2 stash currency isn't readable through any GGG API
+   * (official or legacy), confirmed 2026-07-15. Used only for the optional
+   * affordability signal on gear upgrades; leaving everything at 0 just means
+   * that signal shows "unknown" instead of a real afford/can't-afford call.
+   */
+  currencyHoldings: CurrencyHoldings
 }
 
 // --- Trade API domain types (also used over IPC by the renderer) ---
@@ -85,7 +98,7 @@ export interface RankedUpgrade {
   priceInDivine: number
   priceTier: PriceTier
   isBestValue: boolean
-  /** null = wallet total unavailable (stash fetch failed/unverified), not "can't afford". */
+  /** null = user hasn't entered any currency holdings yet, not "can't afford". */
   affordable: boolean | null
   statDeltas: StatDelta[]
 }

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from '../store/appStore'
-import type { AppConfig } from '@shared/types'
+import type { AppConfig, CurrencyHoldings } from '@shared/types'
 
 const LEAGUE_SUGGESTIONS = ['Standard', 'Hardcore', 'Standard SSF', 'Hardcore SSF']
 
 const emptyForm: AppConfig = {
   poesessid: '',
   accountName: '',
-  league: 'Standard'
+  league: 'Standard',
+  currencyHoldings: { divine: 0, exalted: 0, chaos: 0 }
 }
 
 function SettingsPage(): React.JSX.Element {
@@ -23,8 +24,13 @@ function SettingsPage(): React.JSX.Element {
     if (config) setForm(config)
   }, [config])
 
-  function handleChange(field: keyof AppConfig, value: string): void {
+  function handleChange(field: keyof Omit<AppConfig, 'currencyHoldings'>, value: string): void {
     setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  function handleCurrencyChange(currency: keyof CurrencyHoldings, value: string): void {
+    const parsed = Math.max(0, Number(value) || 0)
+    setForm((prev) => ({ ...prev, currencyHoldings: { ...prev.currencyHoldings, [currency]: parsed } }))
   }
 
   async function handleSubmit(e: React.FormEvent): Promise<void> {
@@ -83,6 +89,46 @@ function SettingsPage(): React.JSX.Element {
             ))}
           </datalist>
         </label>
+
+        <div className="flex flex-col gap-2 rounded border border-gold/15 bg-black/20 p-3">
+          <span className="text-sm font-medium text-gold">Currency you have</span>
+          <p className="text-xs text-gold/50">
+            Optional — lets upgrades show whether you can actually afford them. Leave at 0 to skip. POE2 doesn't expose
+            stash contents to any tool, so this has to be entered by hand.
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <label className="flex flex-col gap-1">
+              <span className="text-xs text-gold/60">Divine</span>
+              <input
+                type="number"
+                min={0}
+                className="rounded border border-gold/30 bg-black/30 px-2 py-1.5 text-gold focus:border-gold focus:outline-none"
+                value={form.currencyHoldings.divine}
+                onChange={(e) => handleCurrencyChange('divine', e.target.value)}
+              />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-xs text-gold/60">Exalted</span>
+              <input
+                type="number"
+                min={0}
+                className="rounded border border-gold/30 bg-black/30 px-2 py-1.5 text-gold focus:border-gold focus:outline-none"
+                value={form.currencyHoldings.exalted}
+                onChange={(e) => handleCurrencyChange('exalted', e.target.value)}
+              />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-xs text-gold/60">Chaos</span>
+              <input
+                type="number"
+                min={0}
+                className="rounded border border-gold/30 bg-black/30 px-2 py-1.5 text-gold focus:border-gold focus:outline-none"
+                value={form.currencyHoldings.chaos}
+                onChange={(e) => handleCurrencyChange('chaos', e.target.value)}
+              />
+            </label>
+          </div>
+        </div>
 
         <div className="flex items-center gap-3">
           <button

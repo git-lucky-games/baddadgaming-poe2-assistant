@@ -17,7 +17,7 @@ export function registerIpcHandlers(): void {
   })
 
   ipcMain.handle('gear-upgrade:scan', (_event, character: string): Promise<SlotUpgrades[]> => {
-    const { accountName, league } = configStore.store
-    return gearUpgradeOrchestrator.scanCharacter(accountName, character, league)
+    const { accountName, league, currencyHoldings } = configStore.store
+    return gearUpgradeOrchestrator.scanCharacter(accountName, character, league, currencyHoldings)
   })
 }

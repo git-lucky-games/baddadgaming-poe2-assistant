@@ -1,9 +1,12 @@
 # Verifying the GGG API against your real account
 
 Quick reference for running `scripts/verify-ggg-api.mjs` — confirms whether the
-`realm=poe2` and stash-tab shape assumptions in `GggApiClient` actually hold
+`realm=poe2` character/item shape assumptions in `GggApiClient` actually hold
 against a real account. Do this from any machine with a browser and Node.js —
 it does not need POE2 installed, just a logged-in pathofexile.com session.
+
+(Stash access isn't checked by this script — already confirmed unavailable
+for POE2 through any method, see project memory.)
 
 **Never paste your POESESSID value anywhere outside your own terminal** — not
 in chat, not in a commit, not in an issue. It's a session credential.
@@ -26,12 +29,6 @@ From the repo root:
 
 ```bash
 POESESSID=paste_the_cookie_value_here ACCOUNT_NAME="YourName#1234" node scripts/verify-ggg-api.mjs
-```
-
-Optional: add a specific league if "Standard" isn't the one you want checked:
-
-```bash
-POESESSID=paste_the_cookie_value_here ACCOUNT_NAME="YourName#1234" LEAGUE="Your League Name" node scripts/verify-ggg-api.mjs
 ```
 
 ## 4. What to send back

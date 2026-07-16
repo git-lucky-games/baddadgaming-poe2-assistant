@@ -1,7 +1,7 @@
 import type { GggApiClient } from '../../services/GggApiClient'
 import type { TradeApiClient } from '../../services/TradeApiClient'
 import type { PoeNinjaClient } from '../../services/PoeNinjaClient'
-import type { GggItem, SlotUpgrades } from '@shared/types'
+import type { GggItem, SlotUpgrades, CurrencyHoldings } from '@shared/types'
 import { resolveStatId, buildSearchBody, parseModText, type StatGroupId, type StatFilter } from './TradeQueryBuilder'
 import { rankUpgrades, type CurrentItemStat } from './UpgradeRanker'
 
@@ -38,15 +38,19 @@ export class GearUpgradeOrchestrator {
     private readonly poeNinjaClient: PoeNinjaClient
   ) {}
 
-  async scanCharacter(accountName: string, character: string, league: string): Promise<SlotUpgrades[]> {
+  async scanCharacter(
+    accountName: string,
+    character: string,
+    league: string,
+    currencyHoldings: CurrencyHoldings
+  ): Promise<SlotUpgrades[]> {
     const items = await this.gggApiClient.getCharacterItems(accountName, character)
     const equipped = items.filter((item) => GEAR_SLOTS.has(item.inventoryId))
 
-    const [divineRate, holdings] = await Promise.all([
-      this.poeNinjaClient.getDivineRate(league),
-      this.gggApiClient.getCurrencyHoldings(accountName, league).catch(() => null)
-    ])
-    const walletDivine = holdings ? this.totalDivine(holdings, divineRate.rates) : null
+    const divineRate = await this.poeNinjaClient.getDivineRate(league)
+    const walletDivine = this.hasAnyCurrency(currencyHoldings)
+      ? this.totalDivine(currencyHoldings, divineRate.rates)
+      : null
 
     const results: SlotUpgrades[] = []
     for (const item of equipped) {
@@ -93,10 +97,14 @@ export class GearUpgradeOrchestrator {
     return stats
   }
 
-  private totalDivine(holdings: Record<string, number>, divineRates: Record<string, number>): number {
-    let total = holdings.divine ?? 0
+  private hasAnyCurrency(holdings: CurrencyHoldings): boolean {
+    return holdings.divine > 0 || holdings.exalted > 0 || holdings.chaos > 0
+  }
+
+  private totalDivine(holdings: CurrencyHoldings, divineRates: Record<string, number>): number {
+    let total = holdings.divine
     for (const [currencyId, amount] of Object.entries(holdings)) {
-      if (currencyId === 'divine') continue
+      if (currencyId === 'divine' || amount <= 0) continue
       const rate = divineRates[currencyId]
       if (rate) total += amount / rate
     }

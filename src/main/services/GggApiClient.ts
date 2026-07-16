@@ -16,34 +16,17 @@ export class GggApiError extends Error {
   }
 }
 
-export interface GggStashTab {
-  id: string
-  n: string
-  type: string
-  i?: number
-}
-
-export interface GggStashItem {
-  typeLine: string
-  stackSize?: number
-}
-
-// Maps stash item typeLine -> the currency id PoeNinjaClient's divine-rate map uses.
-const CURRENCY_TYPE_LINE_MAP: Record<string, string> = {
-  'Divine Orb': 'divine',
-  'Exalted Orb': 'exalted',
-  'Chaos Orb': 'chaos'
-}
-
 /**
  * Legacy character-window API, used via POESESSID cookie — not GGG's documented
- * OAuth API (which has no POE2 stash support at all, and whose app registration
- * is currently closed anyway). See project memory for the full ToS context.
+ * OAuth API (whose app registration is currently closed anyway). See project
+ * memory for the full ToS context.
  *
- * The `realm=poe2` query param and the stash endpoints' response shapes are
- * UNVERIFIED against a real account — inferred from POE1's long-stable legacy
- * format plus the `realm` convention GGG's official API uses elsewhere. Needs
- * confirmation against a real POESESSID before being fully trusted.
+ * `realm=poe2` confirmed working here for characters/items against a real
+ * account (2026-07-15). There is no stash access for POE2 through any method,
+ * official or legacy — confirmed via GGG's docs (Account Stashes is PoE1-only),
+ * a live 400 "Invalid query" from this same endpoint with realm=poe2, and an
+ * unanswered GGG forum thread asking this exact question since Dec 2024. Don't
+ * re-add stash methods here without new information changing that.
  */
 export class GggApiClient {
   constructor(
@@ -61,42 +44,6 @@ export class GggApiClient {
     const url = `${BASE_URL}/character-window/get-items?accountName=${encodeURIComponent(accountName)}&character=${encodeURIComponent(character)}&realm=poe2`
     const parsed = await this.request<{ items?: GggItem[] }>('get-items', 'ggg-character', url)
     return parsed.items ?? []
-  }
-
-  async getStashTabs(accountName: string, league: string): Promise<GggStashTab[]> {
-    const url = `${BASE_URL}/character-window/get-stash-items?accountName=${encodeURIComponent(accountName)}&league=${encodeURIComponent(league)}&tabs=1&realm=poe2`
-    const parsed = await this.request<{ tabs?: GggStashTab[] }>('get-stash-items(tabs)', 'ggg-stash', url)
-    return parsed.tabs ?? []
-  }
-
-  async getStashTabItems(accountName: string, league: string, tabIndex: number): Promise<GggStashItem[]> {
-    const url = `${BASE_URL}/character-window/get-stash-items?accountName=${encodeURIComponent(accountName)}&league=${encodeURIComponent(league)}&tabIndex=${tabIndex}&realm=poe2`
-    const parsed = await this.request<{ items?: GggStashItem[] }>('get-stash-items(tab)', 'ggg-stash', url)
-    return parsed.items ?? []
-  }
-
-  /**
-   * Best-effort currency total from dedicated currency-type stash tabs only —
-   * won't count currency kept in normal/quad/other tabs. Throws like every
-   * other method here on failure; callers (the Orchestrator) decide whether
-   * to degrade gracefully rather than this client silently hiding errors.
-   */
-  async getCurrencyHoldings(accountName: string, league: string): Promise<Record<string, number>> {
-    const tabs = await this.getStashTabs(accountName, league)
-    const currencyTabs = tabs.filter((tab) => tab.type === 'CurrencyStash')
-    const totals: Record<string, number> = {}
-
-    for (const tab of currencyTabs) {
-      if (tab.i === undefined) continue
-      const items = await this.getStashTabItems(accountName, league, tab.i)
-      for (const item of items) {
-        const currencyId = CURRENCY_TYPE_LINE_MAP[item.typeLine]
-        if (!currencyId) continue
-        totals[currencyId] = (totals[currencyId] ?? 0) + (item.stackSize ?? 0)
-      }
-    }
-
-    return totals
   }
 
   private async request<T>(endpoint: string, bucket: string, url: string): Promise<T> {
