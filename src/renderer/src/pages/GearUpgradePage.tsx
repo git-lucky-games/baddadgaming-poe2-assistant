@@ -43,9 +43,7 @@ function GearUpgradePage(): React.JSX.Element {
 
       {loadingCharacters && <p className="text-gold/60">Loading characters…</p>}
       {charactersError && (
-        <p className="rounded border border-crimson/40 bg-crimson/10 p-3 text-sm text-gold">
-          Couldn't load characters: {charactersError}. Check your POESESSID and account name in Settings.
-        </p>
+        <p className="rounded border border-crimson/40 bg-crimson/10 p-3 text-sm text-gold">{charactersError}</p>
       )}
 
       {characters && characters.length > 0 && (
@@ -66,7 +64,10 @@ function GearUpgradePage(): React.JSX.Element {
       )}
 
       {characters && characters.length === 0 && !loadingCharacters && (
-        <p className="text-gold/60">No characters found on this account.</p>
+        <p className="text-gold/60">
+          No characters found. Either this account has none, or its profile privacy setting is blocking access — check
+          your privacy settings on pathofexile.com if you expect to see characters here.
+        </p>
       )}
 
       {scanStatus === 'scanning' && <p className="text-gold/60">Scanning your gear for upgrades…</p>}
